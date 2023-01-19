@@ -18,6 +18,9 @@ In Inertia, you define your application's pages as server-side templates, and th
 php artisan tinker
 ```
 
+[Laravel Nova](https://nova.laravel.com) - beautifully-designed administration panel for Laravel created by the creators of Laravel, Nova is designed to make you the more productive by allowing you to setup admin panels in minutes. Working with nova we mostly modify php classes and write little to no frontend (unless project requires heavy customization). It allows us to quickly setup form pages where admins can modify objects stored in database or easily add new ones. I recommend [this tutorial]() to get started.
+The brief summary of main features can be found below in [Nova](#nova) section.
+
 ---
 
 # 🐛 Laravel
@@ -69,6 +72,14 @@ public function update(User $user, YourModel $model)
   return $model->user()->is($user);
 }
 ```
+
+Sometimes you want to hide some fields when returning from API. You can do it by defining **$hidden** property on a model:
+
+```php
+protected $hidden = ['password', 'email', 'spouse' ]
+```
+
+If you ever want to return a model with it's hidden fields you can do it using **->withHidden()** method.
 
 [Read morea about models ->](https://laravel.com/docs/9.x/eloquent#introduction)
 
@@ -144,7 +155,7 @@ php artisan route:list
 
 ![image info](./img/resource-routes.png)
 
-[Reac more about Controllers ->](https://laravel.com/docs/9.x/controllers#introduction)
+[Read more about Controllers ->](https://laravel.com/docs/9.x/controllers#introduction)
 
 ---
 
@@ -245,7 +256,9 @@ In the example above we hint to Laravel that argument is of **Model** type and i
 TODO
 
 ---
-## Authorization (Gates and Policies)
+## Authorization
+
+### Gates
 
 Gates are simply functions that determine if a user is authorized to perform a given action. Typically, gates are defined within the boot method of the **App\Providers\AuthServiceProvider** class using the Gate facade.Using them we can check if action is allowed by calling **Gate::allows('rule-name', $args)** (or **Gate::denies**) in our route closure - if condition won't pass we can call **abort(403)**.
 
@@ -273,19 +286,22 @@ This will throw if condition is not passed and Laravel will catch it and return 
 
 [Read more about Gates ->](https://laravel.com/docs/9.x/authorization#gates)
 
-**Policies** are classes that organize authorization logic around a particular model or resource.
+## Policies
+
+Policies are classes that organize authorization logic around a particular model or resource.
 
 To create an empty Policy we can use artisan:
 
 ```bash
-artisan make:policy ModelNamePolicy
+artisan make:policy <model_name_policy> --model=<model_name>
 ```
 
 *If you would like to generate a class with example policy methods related to viewing, creating, updating, and deleting the resource, you may provide a --model option when executing the command*
 
-We can then define our policy as a method on that class and use it as rule name the Gate will use method on that policy for authorizing actions. This works because Laravel discovers policies automatically as long as they follow std convention (PostPolicy class located in Policies, PostModel located in Models and Post class as argument to Gate).
-Returning custom responses from a policy is done using **Illuminate\Auth\Access\Response** class using allow or deny method.
+TODO:
+Using policies in gates
 
+Returning custom responses from a policy is done using **Illuminate\Auth\Access\Response** class using allow or deny method.
 
 You can also register policies manually if you want:
 
@@ -293,13 +309,196 @@ You can also register policies manually if you want:
 protected $policies = [
   Post::class => EditableResourcePolicy::class,
 ];
+
 ```
 [Read more about Policies ->](https://laravel.com/docs/9.x/authorization#creating-policies)
 
 ---
 
-To do:
-routes/api.php (API to communicate via JSON)
-Ques
-Notifications
-Events + Listeners
+## Ques
+
+TODO
+
+---
+
+## Notifications
+
+TODO
+
+---
+## Events + Listeners
+
+TODO
+
+---
+
+## Building API
+
+TODO
+
+---
+
+### Nested resource creation:
+
+When creating a new entry in the database that has nested models, it is important to validate the input data, create the nested models, and associate them with the main model in a structured and maintainable way.
+
+In Laravel, one way to approach this is to use Form Request classes for the main model and the nested models validation. The main model's Form Request class should handle the validation of the main model's data and the nested models' data. This can be done by creating new instances of the nested models' Form Request classes within the main model's Form Request class and passing in the relevant data from the original request.
+
+Additionally, you can use Resource Controllers for the main model and the nested models, where the main model's Resource Controller should handle the creation of the main model and the nested models. This can be done by extracting the logic for creating and validating the nested models into separate methods and calling them from the main model's store method. Example below shows this approach, where the CourseController class handles the creation of the main model and the nested models(Menu).
+
+```php
+public function store(CourseRequest $request)
+{
+    ...
+
+    // Create Menus:
+    $this->createMenus($request, $course);
+
+    ...
+}
+
+...
+
+protected function createMenus(CourseRequest $request, Course $course)
+{
+    if (empty($request->menus)) {
+        return;
+    }
+
+    $createdMenus = [];
+    foreach ($request->menus as $menu) {
+        $createdMenus[] = $this->createMenu($menu, $course);
+    }
+
+    $course->menus()->saveMany($createdMenus);
+}
+
+protected function createMenu($menu, Course $course)
+{
+    $newMenu = new Menu();
+    $newMenu->fill($menu);
+    $newMenu->course()->associate($course);
+    $newMenu->save();
+
+    return $newMenu;
+}
+```
+
+---
+
+## Nova:
+
+To visit nova's dashboard after installing it go to:
+
+```
+project_link/nova/login
+```
+You can remove nova prefix in config if you wish to. To login you need to create a user first:
+
+```bash
+php artisan nova:user
+```
+
+Like with all DB queries this should be run either making sure you have connection to db or via sail cli.
+
+To create new resource:
+
+```bash
+php artisan nova:resource <resource_name>
+```
+
+Main display method for any Resource is id but we can customize it like so:
+
+```php
+public static $title = 'name';
+```
+
+Before working with any resource in Laravel Nova, it is important to make sure that you allow mass assignment(either by **$fillable** or **$guarded** property usage) on all fields that the form will be using by specifying them as fillable in the laravel model associated with resource.
+
+If some of your Laravel Models have relationships to one another then we need to let Nova know about them as well. We can do it by using for example **BelongsTo::make()** field type and pass method name from the model as parameter.
+
+[Read more about relationships in Nova ->](https://nova.laravel.com/docs/4.0/resources/relationships.html#relationships)
+
+**fields** function needs to return an array of columns we want to be visible and at the same time it will influence what form inputs we have when we create/edit resource.
+
+```php
+Text::make('Name', 'name')
+```
+
+Some of most popular field types:
+
+**Text**
+**Markdown**
+**Currency**
+**Number**
+**Boolean**
+
+We use make method to specify label and db column to be used (**Text::make('User email', 'public_email')**)
+and can chain the **->required()** method to add basic validation. For more advanced validation it's best to use rules defined for model in it's corresponding request class by chaining **rules** method (also check **creationRules** and **updateRules**).
+
+Using **from** combined with **withMeta** can add auto generated field content to some fields which will be customizable in edit mode but disabled by default:
+
+```php
+Slug::make('Slug')
+  ->from('name')
+  ->withMeta([
+    'readonly' => true
+  ])
+```
+
+We can show/hide certain fields in specific views by chaining appropriate method like **hideFromIndex** / **showOnIndex**.
+
+[Read more about displaying fields](https://nova.laravel.com/docs/4.0/resources/fields.html#showing-hiding-fields)
+
+Adding placeholders is also very easy - all we need to do is to chain **placeholder** method and pass a placeholder text to it. Similarly we can change alignment of test with **textAlign** and add a helper text under input with **help**. We can also make field sortable in index view by chaining **sortable** method.
+
+We can also add fields on which search should be performed by adding column names in **search** property.
+
+```php
+public static $search = [ 'uuid', 'name', 'description' ];
+```
+
+To adjust spacing between rows we can change **$tableStyle** property to 'tight'.
+
+```php
+public static $tableStyle = 'tight';
+```
+
+For even more visual clarity in index view we can overwrite **showColumnBorders** default value to true.
+
+```php
+public static $showColumnBorders = true;
+```
+
+We can adjust on click action for products displayed in table by overwriting **clickAction** property. We can change values to: **default**, **edit**, **ignore**, **preview**, **select**.
+
+Nova also uses [Laravel Policies](#policies) and we can define what actions(buttons) and resources are available for any given user type.
+
+We can add subtitles in global search by overwriting a subtitle method on a resource (it should return a string). We can also configure properties like **$globalSearchResults** (number of shown results) and debounce time(configurable in NovaServiceProvider's **boot** method). We can also disable resource from global search by setting **$globallySearchable** to false.
+
+To create new filter we can use:
+
+```bash
+php artisan nova:filter <filter_name>
+```
+
+A new filter will appear in **Nova/Filters** directory. To use that filter in a resource we need to return it inside array from a **filters** method. Defining options and returning query is handled inside new filter class in **options** and **apply** methods respectively.
+
+Metrics allow you to quickly gain insight on key business indicators for your application. For example, you may define a metric to display the total number of users added to your application per day, or the amount of weekly sales for a given product. Nova offers several types of built-in metrics: value, trend, partition, and progress.
+
+To define new metric use:
+
+```bash
+php artisan nova:<metric_type> <metric_name>
+```
+
+Then, besides configuring your metric class you need to return it in **cards** method of your resource.
+
+[Read more about metrics ->](https://nova.laravel.com/docs/4.0/metrics/defining-metrics.html#defining-metrics)
+
+We can customize side menu in Nova by calling **Nova::mainMenu** method in NovaServiceProvider's **boot** method.
+
+[Read more about customizing menu ->](https://nova.laravel.com/docs/4.0/customization/menus.html)
+
+In many places in Nova we can use icons. Nova utilizes free part of [Heroicons](https://github.com/sschoger/heroicons-ui).
+
