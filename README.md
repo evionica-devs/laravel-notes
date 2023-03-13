@@ -1,10 +1,10 @@
-[PHP](https://www.php.net) - very underappreciated,  server-side scripting language that's been backbone of the web from the beginning. Thanks to rich history combined with modern features (new releases fixed a lot of problems for which it got it's bad reputation - which persists, even today) it's one of best choices to learn as backend developer - lot of job opportunities in legacy projects as well as very quick development of greenfield projects using existing solutions that are battle tested. PHP is known for its simplicity and flexibility, and it is used by millions of websites worldwide.
+[PHP](https://www.php.net) - very underappreciated,  server-side scripting language that's been backbone of the web from the beginning. Thanks to rich history combined with modern features (new releases fixed a lot of problems for which it got it's bad reputation - which persists, even today) it's one of best choices to learn as backend developer - a lot of job opportunities in legacy projects as well as very quick development of greenfield projects using existing solutions that are battle tested. PHP is known for its simplicity and flexibility, and it is used by millions of websites worldwide.
 
 [ORM](https://www.freecodecamp.org/news/what-is-an-orm-the-meaning-of-object-relational-mapping-database-tools/) - In software development, an Object-Relational Mapping (ORM) is a technique that allows a program to interact with a relational database management system (RDBMS) using an object-oriented paradigm. An ORM library provides a set of classes and methods that map to the tables, rows, and columns of a database, making it possible to interact with the database using provided API. This means that developer can work with objects/classes rather than write raw SQL statements which can greatly enhance development speed and security (ORMs usually have build int input sanitization).
 
-[Laravel](https://laravel.com) -  a web application framework with expressive, elegant syntax. It has rich ecosystem of libraries that allow us to create full stack web apps very efficiently. It strives to provide an amazing developer experience while providing powerful features such as thorough dependency injection, an expressive database abstraction layer, queues and scheduled jobs, unit and integration testing, and more.
+[Laravel](https://laravel.com) - a web application framework with expressive, elegant syntax. It has a rich ecosystem of libraries that allow us to create full-stack web apps very efficiently. It strives to provide an amazing developer experience while providing powerful features such as thorough dependency injection, an expressive database abstraction layer, queues and scheduled jobs, unit and integration testing, and more.
 
-[Laravel Breeze](https://laravel.com/docs/9.x/starter-kits#laravel-breeze) - is a minimal, simple implementation of all of Laravel's [authentication features](https://laravel.com/docs/9.x/authentication), including login, registration, password reset, email verification, and password confirmation. In addition, Breeze includes a simple "profile" page where the user may update their name, email address, and password.
+[Laravel Breeze](https://laravel.com/docs/10.x/starter-kits#laravel-breeze) - is a minimal, simple implementation of all of Laravel's [authentication features](https://laravel.com/docs/10.x/authentication), including login, registration, password reset, email verification, and password confirmation. In addition, Breeze includes a simple "profile" page where the user may update their name, email address, and password.
 
 [Laravel LiveWire](https://laravel-livewire.com) - is a library that makes it easy to build dynamic and interactive user interfaces using modern front-end JavaScript libraries such as Vue.js or React. It allows developers to create reactive components in PHP and render them on the server, and then automatically update the components in the browser when the underlying data changes. LiveWire uses its own reactivity system and "virtual DOM" (a lightweight in-memory representation of the DOM) to efficiently update the user interface without requiring a full page refresh (AJAX request to rerender components instead of page).
 
@@ -12,18 +12,62 @@
 
 In Inertia, you define your application's pages as server-side templates, and then you use Inertia to render them on the client side. When you navigate to a new page, Inertia makes an HTTP request to the server to get the new template and data needed to render the page. It then seamlessly updates the page in the client without having to refresh the whole page. This allows you to build applications that feel fast and responsive, without having to worry about the complexity of client-side routing or state management.
 
-[Laravel Tinker](https://laravel.com/docs/9.x/artisan#tinker) - allows you to interact with your entire Laravel application on the command line, including your Eloquent models, jobs, events, and more. To enter the Tinker environment, run:
+[Laravel Tinker](https://laravel.com/docs/10.x/artisan#tinker) - allows you to interact with your entire Laravel application on the command line, including your Eloquent models, jobs, events, and more. To enter the Tinker environment, run:
 
 ```bash
 php artisan tinker
 ```
 
-[Laravel Nova](https://nova.laravel.com) - beautifully-designed administration panel for Laravel created by the creators of Laravel, Nova is designed to make you the more productive by allowing you to setup admin panels in minutes. Working with nova we mostly modify php classes and write little to no frontend (unless project requires heavy customization). It allows us to quickly setup form pages where admins can modify objects stored in database or easily add new ones. I recommend [this tutorial]() to get started.
+[Laravel Nova](https://nova.laravel.com) - beautifully-designed administration panel for Laravel created by the creators of Laravel, Nova is designed to make you the more productive by allowing you to setup admin panels in minutes. Working with nova we mostly modify php classes and write little to no frontend (unless project requires heavy customization). It allows us to quickly setup form pages where admins can modify objects stored in database or easily add new ones. I recommend [this tutorial](https://www.youtube.com/watch?v=D0EjoNy2-Ys&list=PLFHz2csJcgk8hFHA0x8yiuSWC0PR17UzW) to get started.
 The brief summary of main features can be found below in [Nova](#nova) section.
 
 ---
 
 # 🐛 Laravel
+
+---
+
+[High Level Overview](https://app.mural.co/t/pawelw8790/m/pawelw8790/1670314813158/31eafca028fda3ad3155a9f1fd6f84cb03b68664?sender=u9f7bec42910552b497595702)
+
+---
+
+## Project Directory
+
+### app
+
+Core of the application: models, controllers, browser middleware's and more. This is where most of your logic will live.
+
+### bootstrap
+
+It contains server logic to bootstrap application as well as cache for server optimization.
+
+### config
+
+App config - links to all the config required to run the app, fallback as well available options listed. Can be accessed through application using `config` method passing the config path (for example "alias.namespace.value").
+
+### database
+
+Files that deal with database structure (migrations) as well as seeding logic and factories.
+
+### lang
+
+Stores all of application language files
+
+### public
+
+Frontend entry point for clients as well as some public images and files related to our webapp (favicon, bg_images etc.)
+
+### resources
+
+All files needed for frontend views -> handling rendering HTML, our CSS and JS files.
+
+### routes
+
+Route definitions (wrapped in middleware's if needed) and links to handlers responsible for route rendering. Separated for API, channels (event broadcasting), console and web.
+
+### storage
+
+Logs and server generated files (debugs, pdfs in checkout etc.)
 
 ---
 
@@ -62,7 +106,7 @@ When we write update method in a controller (it receives **$request** and **$mod
 $this->authorize('update', $model);
 ```
 
-This will prevent anyone from updating given model until we define [Authorization Rules](https://laravel.com/docs/9.x/authorization) in our [Policy](https://laravel.com/docs/9.x/authorization#creating-policies) for given model.
+This will prevent anyone from updating given model until we define [Authorization Rules](https://laravel.com/docs/10.x/authorization) in our [Policy](https://laravel.com/docs/10.x/authorization#creating-policies) for given model.
 
 Then, in the YourModelPolicy.php class we need to define a method that returns a bool:
 
@@ -81,7 +125,13 @@ protected $hidden = ['password', 'email', 'spouse' ]
 
 If you ever want to return a model with it's hidden fields you can do it using **->withHidden()** method.
 
-[Read morea about models ->](https://laravel.com/docs/9.x/eloquent#introduction)
+[Read more about models ->](https://laravel.com/docs/10.x/eloquent#introduction)
+
+
+It is worth to use debugger tool when working with Laravel. It will help you see if there are optimization opportunities withing your app (too many queries, long page load, too much memory usage). If you have problems with your app being slow here is a great resource on how you can use build in laravel features to improve DB querying and your code base:
+
+[Advanced querying with Laravel Eloquent talk](https://www.youtube.com/watch?v=g8sAwiiQVgw)
+[Github repo with code examples](https://github.com/reinink/laracon2018)
 
 ---
 
@@ -93,7 +143,7 @@ A version control for your database, allowing your team to define and share the 
 php artisan migrate
 ```
 
-*Each database migration will only be run once. To make additional to tables during development (update an un-deployed migration and rebuild your database from scratch) use **php artisan migrate:fresh**)*
+*Each database migration will only be run once. To make changes to tables during development you need to create new migration which will contain changes to tables you want to make.*
 
 or for single model:
 
@@ -103,11 +153,18 @@ php artisan make:migration <migration_name example: create_flights_table>
 
 Laravel will use the name of the migration to attempt to guess the name of the table and whether or not the migration will be creating a new table. If Laravel is able to determine the table name from the migration name, Laravel will pre-fill the generated migration file with the specified table. Otherwise, you may simply specify the table in the migration file manually
 
-Each new migration will be placed in your database/migrations directory. Each migration filename contains a timestamp that allows Laravel to determine the order of the migrations.
+Each new migration will be placed in your database/migrations directory. Each migration filename contains a timestamp that allows Laravel to determine the order of the migrations. If you have created too many migrations you can squash them to make it more readable for other developers.
 
-[Read more about Running Migrations ->](https://laravel.com/docs/9.x/migrations#running-migrations)
+[Read more about Running Migrations ->](https://laravel.com/docs/10.x/migrations#running-migrations)
 
-[Read more about Migrations ->](https://laravel.com/docs/9.x/migrations#introduction)
+[Read more about Migrations ->](https://laravel.com/docs/10.x/migrations#introduction)
+
+### Seeders and Factories
+
+Seeders can be used to easily add data (dummy or not) to your database. You can run them using artisan and incorporate it into your deployment pipeline.
+To keep your logic clean you can create Factories for each model you want to seed and use model's faker instance to generate dummy data.
+
+[Read more about Seeding database ->](https://laravel.com/docs/10.x/seeding)
 
 ---
 
@@ -129,11 +186,11 @@ use App\Http\Controllers\UserController;
 Route::get('/user/{is}', [UserController::class, 'show']);
 ```
 
+[Read more about Controllers ->](https://laravel.com/docs/10.x/controllers#introduction)
+
 ### Resource Controllers
 
-Each model in your application can be think of as a "resource" and since it is typical to perform CRUD operations on resources, Laravel resource routing assigns methods for those operations with a single line of code.
-
-Example use:
+Each model in your application can be think of as a "resource" and since it is typical to perform CRUD operations on resources, Laravel resource routing assigns methods for those operations with a single line of code:
 
 ```bash
 php artisan make:controller <YourController> --resource
@@ -147,7 +204,7 @@ use App\Http\Controllers\PhotoController;
 Route::resource('photos', PhotoController::class);
 ```
 
-This single route declaration creates multiple routes to handle all CRUD operations. To view list of available routes use (add | grep <route-name> to filter):
+This single route declaration creates multiple routes to handle all CRUD operations. To view list of available routes use (add `| grep <route-name>` to filter):
 
 ```bash
 php artisan route:list
@@ -155,13 +212,17 @@ php artisan route:list
 
 ![image info](./img/resource-routes.png)
 
-[Read more about Controllers ->](https://laravel.com/docs/9.x/controllers#introduction)
+Laravel also helps us with navigating through our collection by giving us access to pagination. Each model can be returned with metadata about current page and related information as well as links, which can be used to create navigation in UI.
+
+[Read more about Resource Pagination ->](https://laravel.com/docs/10.x/eloquent-resources#pagination)
+
+[Read more about Resource Controllers ->](https://laravel.com/docs/10.x/controllers#resource-controllers)
 
 ---
 
 ## Relationships
 
-Relationships are defined as methods on your Eloquent model classes. Since relationships also serve as powerful [query builders](https://laravel.com/docs/9.x/queries), defining relationships as methods provides powerful method chaining and querying capabilities. Once the relationship is defined, we may retrieve the related record using Eloquent's dynamic properties. Dynamic properties allow you to access relationship methods as if they were properties defined on the model:
+Relationships are defined as methods on your Eloquent model classes. Since relationships also serve as powerful [query builders](https://laravel.com/docs/10.x/queries), defining relationships as methods provides powerful method chaining and querying capabilities. Once the relationship is defined, we may retrieve the related record using Eloquent's dynamic properties which allow you to access relationship methods as if they were properties defined on the model:
 
 ```php
 $phone = User::find(1)->phone;
@@ -170,7 +231,7 @@ $phone = User::find(1)->phone;
 Foreign key of the relationship is determined based on the parent model name. Eloquent assumes that the foreign key should have a value matching the primary key column of the parent. In other words, Eloquent will look for the value of the user's **id**(primary key) column in the **user_id(foreign key column in phone table) column of the Phone record.
 
 
-[Read more about Relationships ->](https://laravel.com/docs/9.x/eloquent-relationships#introduction)
+[Read more about Relationships ->](https://laravel.com/docs/10.x/eloquent-relationships#introduction)
 
 ---
 
@@ -233,6 +294,22 @@ Then, in any method of any controller we can use name of the route in a function
  return Redirect::route('profile.edit');
 ```
 
+```php
+Route::prefix("/posts")->group(function () {
+  // all resource or otherwise associated routes go here
+});
+```
+
+### Fallback route
+
+You can provide fallback route for 404 errors by defining a route using `fallback` method of the Route facade as the last route definitions in your web.php  file:
+
+```php
+Route::fallback(
+  // You can provide a view controller or a callback function here
+)
+```
+
 ### Route model binding
 
 When injecting a model ID to a route or controller action, you often would have query the database to retrieve the model that corresponds to that ID in order to extract relevant data that you might want to render or work with. Laravel route model binding provides a convenient way to automatically inject the model instances directly into your routes.
@@ -253,14 +330,16 @@ In the example above we hint to Laravel that argument is of **Model** type and i
 
 ## Authentication
 
-TODO
+Laravel provides starter kits for fully featured authentication (registering, login, password retrieval etc.). Most commonly used is [Laravel Breeze](https://laravel.com/docs/10.x/starter-kits#laravel-breeze) and it is recommended to use with any new project. Unless you have some very specific use case in your app basic Breeze features should be enough to make your app simple to maintain from authorization standpoint and most importantly secure.
+
+[Read more about authentication](https://laravel.com/docs/10.x/authentication#introduction)
 
 ---
 ## Authorization
 
 ### Gates
 
-Gates are simply functions that determine if a user is authorized to perform a given action. Typically, gates are defined within the boot method of the **App\Providers\AuthServiceProvider** class using the Gate facade.Using them we can check if action is allowed by calling **Gate::allows('rule-name', $args)** (or **Gate::denies**) in our route closure - if condition won't pass we can call **abort(403)**.
+Gates are simply functions that determine if a user is authorized to perform a given action. Typically, gates are defined within the boot method of the **App\Providers\AuthServiceProvider** class using the Gate facade. Using them we can check if action is allowed by calling **Gate::allows('rule-name', $args)** (or **Gate::denies**) in our route closure - if condition won't pass we can call **abort(403)**.
 
 ```php
 Gate::define('update-post', function (User $user, Post $post) {
@@ -284,7 +363,7 @@ Gate::authorize('update-post', $args);
 
 This will throw if condition is not passed and Laravel will catch it and return 403 automatically. Gates always receive a user instance as their first argument and may optionally receive additional arguments (**$args** in example above) - a relevant model for example.
 
-[Read more about Gates ->](https://laravel.com/docs/9.x/authorization#gates)
+[Read more about Gates ->](https://laravel.com/docs/10.x/authorization#gates)
 
 ## Policies
 
@@ -298,7 +377,6 @@ artisan make:policy <model_name_policy> --model=<model_name>
 
 *If you would like to generate a class with example policy methods related to viewing, creating, updating, and deleting the resource, you may provide a --model option when executing the command*
 
-TODO:
 Using policies in gates
 
 Returning custom responses from a policy is done using **Illuminate\Auth\Access\Response** class using allow or deny method.
@@ -311,7 +389,7 @@ protected $policies = [
 ];
 
 ```
-[Read more about Policies ->](https://laravel.com/docs/9.x/authorization#creating-policies)
+[Read more about Policies ->](https://laravel.com/docs/10.x/authorization#creating-policies)
 
 ---
 
